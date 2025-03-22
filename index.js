@@ -25,7 +25,7 @@ function Login() {
 
         </form>
     </div>
-`;
+    `;
     document.getElementById('app').innerHTML = login;
     // document.body.innerHTML = login;
 
@@ -74,13 +74,14 @@ function handleSubmit() {
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             if (data.error) {
                 const err = document.getElementById('err');
                 err.textContent = data.error;
                 err.style.display = "block";
-            }else{
-                //JWT
+            } else {
+                //Store JWT token
+                localStorage.setItem("jwt", data)
+                // console.log("data", data);
                 home()
             }
         })
@@ -92,11 +93,330 @@ Login();
 //------- End Login ------//
 
 //------- Start Home -----//
-function home(){
+function home() {
     let app = document.getElementById('app');
-    app.innerHTML = "home";
+    app.innerHTML = "";
+    //--- Start Create Header
+    const header = document.createElement('div');
+    header.classList.add("header");
+    app.appendChild(header);
+    const title = document.createElement('h2');
+    title.classList.add("title");
+    title.textContent = "graphql"
+    const logout = document.createElement('h2');
+    logout.classList.add("logout");
+    logout.textContent = "logout";
+    header.append(title, logout);
+    //--- End Create Header
+
+    //--- Start Create first and Last name
+    const welcome = document.createElement('div');
+    welcome.classList.add("welcome");
+    app.appendChild(welcome);
+    const container = document.createElement('div');
+    container.classList.add("container-welc");
+    welcome.appendChild(container);
+    const fullName = document.createElement('h2')
+    fullName.classList.add("fullName");
+    container.appendChild(fullName);
+    //--- End Create first and Last name
+
+    //--- Start Section Level and Ratio
+    const levelAndRatio = document.createElement('div');
+    levelAndRatio.classList.add('levelAndRatio');
+    // levelAndRatio.appendChild(container);
+    app.appendChild(levelAndRatio);
+
+    const level = document.createElement('div');
+    level.classList.add('level');
+    levelAndRatio.appendChild(level);
+
+    const ratio = document.createElement('div');
+    ratio.classList.add('ratio');
+    levelAndRatio.appendChild(ratio);
+
+    const ratioContent = document.createElement('div');
+    ratioContent.classList.add('ratioContent');
+    ratio.appendChild(ratioContent);
+    // const titleAuditRatio = document.createElement('h3');
+    // titleAuditRatio.classList.add('titleAuditRatio');
+    // titleAuditRatio.classList = "Audits Ratio";
+    // ratio.appendChild(titleAuditRatio);
+
+    //--- End Section Level and Ratio
+
+    //--- Start Section Projects
+    const projects = document.createElement('div');
+    projects.classList.add('projects');
+    app.appendChild(projects);
+    //--- End Section Projects
+
+    /* Start Section Best Skills */
+    const bestSkills = document.createElement('div');
+    bestSkills.classList.add('best-skills');
+    app.appendChild(bestSkills);
+    /* End Section Best Skills */
+
+
+    // app.innerHTML += "";
+    const query = `
+        {
+            user{
+                login
+                firstName
+                lastName
+                totalUp
+                totalDown
+                auditRatio
+            }
+
+            level : transaction (where :{_and :[
+                {type : {_eq : "level"}}
+                {event: {object: {name: {_eq: "Module"}}}}
+            ]}
+                order_by :{amount : desc}
+                limit :  1
+            ){
+                type
+                amount
+            }  
+            
+            porjects: transaction(
+                where: {type: {_eq: "xp"}, _and: [
+                {path: {_nlike: "%piscine-go%"}},
+                {path: {_nlike: "%piscine-js%"}},
+                {path: {_nlike: "%checkpoint/%"}},
+                ]}
+                order_by: {createdAt: asc}
+            ) {
+                path
+                amount
+            }
+
+            skills: user {
+                transactions(where: {type: {_like: "skill_%"}}, order_by: {amount: asc}) {
+                    type
+                    amount
+                }
+            }
+        }
+    `;
+    // const divData = document.createElement('div');
+    // app.append(divData);
+    const jwt = localStorage.getItem("jwt");
+    if (!jwt) {
+        console.error("JWT not found. Redirecting to login...");
+        app.innerHTML = `<p>Authentication required. Please log in.</p>`;
+        return;
+    }
+
+    fetch(`https://learn.zone01oujda.ma/api/graphql-engine/v1/graphql`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${jwt}`
+        },
+        body: JSON.stringify({
+            query
+        })
+    })
+        .then(response => response.json())
+        .then(results => {
+            if (results.errors) {
+                app.innerHTML = `<p>Error fetching Data</p>`;
+                return
+            }
+
+            const dataUser = results.data.user
+            // // divData.innerHTML = data.user
+            dataUser.forEach(ele => {
+                fullName.textContent = `Welcome ${ele.firstName} ${ele.lastName}`;
+                setTimeout(() => updateGraphRatio(ele.totalUp, ele.totalDown), 0);
+                // updateGraphRatio(ele.totalUp, ele.totalDown);
+            });
+            //--- Start Create Level
+            const levelAmount = results.data.level[0].amount;
+            console.log("level", levelAmount);
+            const svgLevel = `
+                <svg width="100%" height="300">
+                    <circle
+                        width="80%"
+                        r="20%"
+                        cx="50%"
+                        cy="150"
+                        fill="#FFF"
+                        stroke="black"
+                        stroke-width="5"
+                    />
+                    
+                </svg>
+            `;
+            //<text x="10" y="10" text-anchor="middle" font-size="24" fill="#000">${levelAmount}</text>
+            level.innerHTML = svgLevel;
+            const levelAmountDiv = document.createElement('div');
+            levelAmountDiv.classList.add('levelAmountDiv');
+
+            const levelAmountNbr = document.createElement('p');
+            levelAmountNbr.classList.add('levelAmountNbr');
+            levelAmountNbr.innerHTML = `${levelAmount}<br>Level`;
+            levelAmountDiv.appendChild(levelAmountNbr);
+            level.appendChild(levelAmountDiv);
+            //--- End Create Level
+
+            //--- Start Create Ratio
+            ratioContent.innerHTML = `
+                <svg>
+                    <text x="150" y="30" fill="white" font-size="30" font-weight="bold" text-anchor="middle">
+                        Audits ratio
+                    </text>
+                    <!-- Green Bar (Dynamic) -->
+                    <rect id="green-bar" x="20" y="50" width="200" height="20" fill="green"></rect>
+
+                    <!-- Red Bar (Dynamic) -->
+                    <rect id="red-bar" x="20" y="100" width="220" height="20" fill="red"></rect>
+
+                    <!-- Labels -->
+                    <text x="130" y="66" fill="white" font-size="18" font-weight="bold"> 
+                        <tspan id="green-value"></tspan> ↑
+                    </text>
+                    <text x="130" y="116" fill="white" font-size="18" font-weight="bold"> 
+                        <tspan id="red-value"></tspan> ↓
+                    </text>
+
+                    <!-- Ratio Number -->
+                    <text x="20" y="150" fill="white" font-size="30" font-weight="bold">
+                        <tspan id="ratio-value">0.9</tspan>
+                    </text>
+                </svg>
+            `;
+
+            // setTimeout(() => updateGraphRatio(800, 120) , 3000);
+
+
+            //--- End Create Ratio
+
+            //--- Start display projects
+            const listProjects = results.data.porjects;
+            // console.log("porjects", listProjects);
+
+            // listProjects.forEach(prj => {
+            //     console.log(prj.path);
+            //     console.log(prj.amount);
+
+            // });
+
+
+            projects.innerHTML = `
+                <svg id="chart" width="100%">
+                    <!-- Title -->
+                    <text x="50%" y="20" fill="white" font-size="30" font-weight="bold" text-anchor="middle">
+                        Project Audits
+                    </text>
+                </svg>
+            `;
+            generateChart(listProjects);
+
+            //--- End display projects
+
+            //--- Start Best Skills
+            bestSkills.innerHTML = ``;
+
+
+            //--- End Best Skills
+        });
+
 
 
 }
 
 //------- End Home -----//
+
+function updateGraphRatio(greenCounter, redCounter) {
+    let maxWidth = 250;
+    let maxVal = Math.max(greenCounter, redCounter);
+
+    let greenWidth = (greenCounter / maxVal) * maxWidth;
+    let redWidth = (redCounter / maxVal) * maxWidth;
+
+    console.log(greenWidth);
+    console.log(redWidth);
+
+
+    // Update bar widths
+    document.getElementById("green-bar").setAttribute("width", greenWidth);
+    document.getElementById("red-bar").setAttribute("width", redWidth);
+
+    // Update text values
+    document.getElementById("green-value").textContent = formatNumber(greenCounter);
+    document.getElementById("red-value").textContent = formatNumber(redCounter);
+
+    // Update ratio
+    let ratio = (greenCounter / redCounter).toFixed(1);
+    document.getElementById("ratio-value").textContent = ratio + " Ratio";
+
+}
+
+function formatNumber(num) {
+    if (num >= 1_000_000) {
+        return (num / 1_000_000).toFixed(2) + "M";
+    } else if (num >= 1_000) {
+        return (num / 1_000).toFixed(2) + "K";
+    }
+    return num
+}
+
+function generateChart(listProjects) {
+    // const listProjects = results.data.porjects;
+    const svg = document.getElementById("chart");
+    console.log("svg", svg);
+
+
+    let maxAmount = Math.max(...listProjects.map(prj => prj.amount)); // Get max value
+    let maxWidth = 300; // Max width for bars
+    let startY = 50; // Initial Y position
+    let barHeight = 20;
+    let barSpacing = 30; // Space between bars
+
+    let padding = 50; // Space for title & extra spacing
+
+    // Calculate required height dynamically
+    let requiredHeight = listProjects.length * barSpacing + padding;
+    svg.setAttribute("height", requiredHeight); // Set dynamic height
+
+    listProjects.forEach((prj, index) => {
+        let barWidth = (prj.amount / maxAmount) * maxWidth; // Scale bar width
+
+        // Create bar
+        let bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        // bar.setAttribute("x", 50);
+        bar.setAttribute("x", 200);
+        bar.setAttribute("y", startY + index * barSpacing);
+        bar.setAttribute("width", barWidth + 200);
+        bar.setAttribute("height", barHeight);
+        bar.setAttribute("fill", "green");
+        svg.appendChild(bar);
+
+        // Add project name
+        let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", 10);
+        text.setAttribute("y", startY + index * barSpacing + barHeight / 1.5);
+        text.setAttribute("fill", "white");
+        text.setAttribute("font-size", "20");
+        text.textContent = formatChar(prj.path);
+        svg.appendChild(text);
+
+        // Add amount label
+        let label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        // label.setAttribute("x", barWidth + 60);
+        label.setAttribute("x", barWidth + 420);
+        label.setAttribute("y", startY + index * barSpacing + barHeight / 1.5);
+        label.setAttribute("fill", "white");
+        label.setAttribute("font-size", "20");
+        label.textContent = formatNumber(prj.amount);
+        svg.appendChild(label);
+    });
+}
+
+function formatChar(path) {
+    return path.split(`/oujda/module/`).pop();
+}
