@@ -26,13 +26,14 @@ function Login() {
         </form>
     </div>
     `;
+
     document.getElementById('app').innerHTML = login;
-    // document.body.innerHTML = login;
+
 
     // setupPasswordToggle() {
-    const showpassword = document.getElementById("showpassword");
     const password = document.getElementById("password");
-
+    // const username = document.getElementById('username');
+    const showpassword = document.getElementById("showpassword");
     let show = false
 
     showpassword?.addEventListener("click", (e) => {
@@ -53,17 +54,34 @@ function Login() {
     const form = document.getElementById('loginForm')
     form?.addEventListener('submit', (e) => {
         e.preventDefault();
-        handleSubmit()
+        usernameValue = document.getElementById('username').value;
+        passwordValue = document.getElementById("password").value;
+        handleSubmit(usernameValue, passwordValue);
     });
 
     // }
 
 }
+Login();
 
-function handleSubmit() {
-    const username = document.getElementById('username');
-    const password = document.getElementById('password');
-    const credentials = btoa(`${username.value}:${password.value}`);
+window.addEventListener('DOMContentLoaded', function () {
+    const getJWT = localStorage.getItem("jwt");
+    if (!getJWT) {
+        Login()
+    } else {
+        home();
+    }
+});
+
+
+
+function handleSubmit(username, password) {
+
+    // const username = document.getElementById('username');
+    // const password = document.getElementById('password');
+    // const credentials = btoa(`${username.value}:${password.value}`);
+
+    const credentials = btoa(`${username}:${password}`);
 
     fetch(`https://learn.zone01oujda.ma/api/auth/signin`, {
         method: "POST",
@@ -81,14 +99,11 @@ function handleSubmit() {
             } else {
                 //Store JWT token
                 localStorage.setItem("jwt", data)
-                // console.log("data", data);
                 home()
             }
         })
 
 }
-
-Login();
 
 //------- End Login ------//
 
@@ -105,9 +120,27 @@ function home() {
     title.textContent = "graphql"
     const logout = document.createElement('h2');
     logout.classList.add("logout");
-    logout.textContent = "logout";
+    const linkLogout = document.createElement('a');
+    linkLogout.classList.add('linkLogout');
+    linkLogout.id = "linkLogout";
+    linkLogout.textContent = "logout";
+    logout.appendChild(linkLogout);
     header.append(title, logout);
     //--- End Create Header
+
+    // document.addEventListener('DOMContentLoaded', function () {
+
+    const Logout = document.getElementById('linkLogout');
+
+    if (Logout) {
+        Logout.addEventListener("click", function (e) {
+            e.preventDefault();
+            localStorage.removeItem("jwt");
+            localStorage.clear();
+            Login();
+        });
+    }
+    // });
 
     //--- Start Create first and Last name
     const welcome = document.createElement('div');
@@ -236,7 +269,6 @@ function home() {
             });
             //--- Start Create Level
             const levelAmount = results.data.level[0].amount;
-            console.log("level", levelAmount);
             const svgLevel = `
                 <svg width="100%" height="300">
                     <circle
@@ -297,14 +329,6 @@ function home() {
 
             //--- Start display projects
             const listProjects = results.data.porjects;
-            // console.log("porjects", listProjects);
-
-            // listProjects.forEach(prj => {
-            //     console.log(prj.path);
-            //     console.log(prj.amount);
-
-            // });
-
 
             projects.innerHTML = `
                 <svg id="chart" width="100%">
@@ -319,7 +343,16 @@ function home() {
             //--- End display projects
 
             //--- Start Best Skills
-            bestSkills.innerHTML = ``;
+            bestSkills.innerHTML = `
+                <svg id="chartSkills" width="100%">
+                    <!-- Title -->
+                    <text x="50%" y="20" fill="white" font-size="30" font-weight="bold" text-anchor="middle">
+                        Best Skills
+                    </text>
+                </svg>
+            `;
+            const skills = results.data.skills;
+            generateSkillChart(skills)
 
 
             //--- End Best Skills
@@ -337,10 +370,6 @@ function updateGraphRatio(greenCounter, redCounter) {
 
     let greenWidth = (greenCounter / maxVal) * maxWidth;
     let redWidth = (redCounter / maxVal) * maxWidth;
-
-    console.log(greenWidth);
-    console.log(redWidth);
-
 
     // Update bar widths
     document.getElementById("green-bar").setAttribute("width", greenWidth);
@@ -368,9 +397,6 @@ function formatNumber(num) {
 function generateChart(listProjects) {
     // const listProjects = results.data.porjects;
     const svg = document.getElementById("chart");
-    console.log("svg", svg);
-
-
     let maxAmount = Math.max(...listProjects.map(prj => prj.amount)); // Get max value
     let maxWidth = 300; // Max width for bars
     let startY = 50; // Initial Y position
@@ -419,4 +445,78 @@ function generateChart(listProjects) {
 
 function formatChar(path) {
     return path.split(`/oujda/module/`).pop();
+}
+
+/* Best Skills */
+function generateSkillChart(skills) {
+    const skillData = aggregateSkills(skills);
+    const svg = document.getElementById("chartSkills");
+
+    // Constants
+    const chartWidth = 600;
+    const chartHeight = 300;
+    const barWidth = 30;
+    const barSpacing = 10;
+    const maxBarHeight = 200; // Max height for the tallest bar
+    const maxValue = skillData[0][1]; // Get max value to scale bars
+
+    // Set SVG size dynamically
+    svg.setAttribute("width", chartWidth);
+    svg.setAttribute("height", chartHeight + 50);
+
+    // Generate bars
+    skillData.forEach((skill, index) => {
+        let skillName = skill[0];
+        let skillValue = skill[1];
+
+        let barHeight = (skillValue / maxValue) * maxBarHeight;
+        let x = index * (barWidth + barSpacing);
+        let y = chartHeight - barHeight;
+
+        // Create bar
+        let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", barWidth);
+        rect.setAttribute("height", barHeight);
+        rect.setAttribute("fill", "white");
+        svg.appendChild(rect);
+
+        // Add skill label
+        let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x + barWidth / 2);
+        text.setAttribute("y", chartHeight + 15);
+        text.setAttribute("fill", "white");
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("font-size", "10");
+        text.textContent = skillName;
+        svg.appendChild(text);
+
+        // Add value label
+        let valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        valueText.setAttribute("x", x + barWidth / 2);
+        valueText.setAttribute("y", y - 5);
+        valueText.setAttribute("fill", "white");
+        valueText.setAttribute("text-anchor", "middle");
+        valueText.setAttribute("font-size", "10");
+        valueText.textContent = skillValue + "%";
+        svg.appendChild(valueText);
+    });
+}
+
+function aggregateSkills(skills) {
+    let skillMap = {};
+
+    skills.forEach(skill => {
+        skill.transactions.forEach(tx => {
+            let skillName = tx.type.replace("skill_", ""); // Remove "skill_" prefix
+            if (!skillMap[skillName]) {
+                skillMap[skillName] = 0;
+            }
+            skillMap[skillName] += tx.amount;
+        });
+    });
+
+    return Object.entries(skillMap)
+        .sort((a, b) => b[1] - a[1]); // Sort by amount (descending)
 }
