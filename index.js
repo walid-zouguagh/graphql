@@ -333,7 +333,7 @@ function home() {
             projects.innerHTML = `
                 <svg id="chart" width="100%">
                     <!-- Title -->
-                    <text x="50%" y="20" fill="white" font-size="30" font-weight="bold" text-anchor="middle">
+                    <text x="50%" y="25" fill="white" font-size="30" font-weight="bold" text-anchor="middle">
                         Project Audits
                     </text>
                 </svg>
@@ -346,7 +346,7 @@ function home() {
             bestSkills.innerHTML = `
                 <svg id="chartSkills" width="100%">
                     <!-- Title -->
-                    <text x="50%" y="20" fill="white" font-size="30" font-weight="bold" text-anchor="middle">
+                    <text x="50%" y="25" fill="white" font-size="30" font-weight="bold" text-anchor="middle">
                         Best Skills
                     </text>
                 </svg>
@@ -453,7 +453,8 @@ function generateSkillChart(skills) {
     const svg = document.getElementById("chartSkills");
 
     // Constants
-    const chartWidth = 600;
+    // const chartWidth = 600;
+    const chartWidth = `100%`;
     const chartHeight = 300;
     const barWidth = 30;
     const barSpacing = 10;

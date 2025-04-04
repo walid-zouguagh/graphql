@@ -1,5 +1,5 @@
 /* Start Login */
-*{
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -17,9 +17,9 @@
     "wdth" 100;
 } */
 
-body{
+body {
     background-image: url(../images/bg-login.jpg);
-    background-size: cover;    
+    background-size: cover;
     min-height: 100vh;
     font-family: "Roboto", serif;
 }
@@ -28,7 +28,7 @@ body{
     height: 100vh;
 }
 
-.container{
+.container {
     /* width: 30%; */
     width: 500px;
     max-width: 90%;
@@ -44,17 +44,18 @@ body{
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    
+
 }
 
-.container form{
+.container form {
     min-height: 400px;
     width: 100%;
     /* display: flex;
     flex-direction: column;
     gap: 20px; */
 }
-.container form h3.title{
+
+.container form h3.title {
     text-transform: capitalize;
     text-align: center;
     background-color: rgba(255, 255, 255, 0.2);
@@ -70,21 +71,23 @@ body{
     border-top-left-radius: 0px;
 }
 
-.container form div{
+.container form div {
     width: 90%;
     margin-top: 30px;
     margin-left: 5%;
     margin-right: 5%;
 }
-.container form div.password div{
+
+.container form div.password div {
     display: flex;
     width: 100%;
     margin: 0;
 }
+
 .container form input[type="text"],
 .container form input[type="password"],
-.container form input[type="password"] + button,
-.container form input[type="text"] + button.showpassword{
+.container form input[type="password"]+button,
+.container form input[type="text"]+button.showpassword {
     width: 100%;
     outline: none;
     padding: 12px;
@@ -95,15 +98,17 @@ body{
     font-size: 1em;
     margin-top: 5px;
 }
+
 .container form input[type="password"],
-.container form input[type="text"].password{
+.container form input[type="text"].password {
     width: 90%;
     border-right: none;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
-.container form input[type="password"] + button.showpassword,
-.container form input[type="text"] + button.showpassword{
+
+.container form input[type="password"]+button.showpassword,
+.container form input[type="text"]+button.showpassword {
     width: 20%;
     border-left: none;
     border-top-left-radius: 0;
@@ -118,19 +123,20 @@ input[type="password"]:focus {
 }
 
 
-input[type="checkbox"]{
+input[type="checkbox"] {
     width: 15px;
     height: 15px;
     margin-left: 5px;
 }
 
-.container form div label{
+.container form div label {
     margin-left: 5px;
     font-size: 20px;
     text-transform: capitalize;
     font-weight: bold;
 }
-input[type="submit"]{
+
+input[type="submit"] {
     background: rgba(255, 255, 255, 0.2);
     color: white;
     padding: 12px;
@@ -141,14 +147,16 @@ input[type="submit"]{
     font-size: 1em;
     transition: background 0.3s ease;
 }
-input[type="submit"]:hover{
+
+input[type="submit"]:hover {
     background: rgba(255, 255, 255, 0.3);
 }
 
-.container form div label.rememberme{
+.container form div label.rememberme {
     margin-left: 5px;
 }
-.container form div h3{
+
+.container form div h3 {
     color: white;
     text-align: center;
     font-size: 0.9em;
@@ -168,17 +176,18 @@ input[type="submit"]:hover{
     text-decoration: underline;
 }
 
-.container form div span{
+.container form div span {
     font-weight: normal;
     font-size: 15px;
     color: rgb(250, 27, 27);
     margin-left: 5px;
     display: none;
 }
+
 /* End Login */
 
 /* Start Header */
-.header{
+.header {
     padding-left: 20px;
     padding-right: 20px;
     padding-top: 15px;
@@ -188,25 +197,29 @@ input[type="submit"]:hover{
     display: flex;
     justify-content: space-between;
 }
+
 .header .title,
-.header .logout{
+.header .logout {
     text-transform: capitalize;
     font-size: 1.5em;
     cursor: pointer;
 }
+
 /* End Header */
 
 /* Start Username */
 /* .welcome{} */
-.welcome .container-welc{
+.welcome .container-welc {
     margin-left: 20px;
     margin-right: 20px;
 }
-.welcome .container-welc .fullName{
+
+.welcome .container-welc .fullName {
     color: #fff;
     margin: 20px 0;
     font-size: 2em;
 }
+
 /* End Username */
 
 /* Start Level and Ratio */
@@ -215,16 +228,18 @@ input[type="submit"]:hover{
     padding-right: 20px;
     display: flex;
     justify-content: space-between;
+    max-width: 80%;
+    margin: auto;
 }
 
-.levelAndRatio .level{
+.levelAndRatio .level {
     background: #13062f;
     width: 45%;
     position: relative;
     border-radius: 20px;
 }
 
-.levelAndRatio .level .levelAmountDiv{
+.levelAndRatio .level .levelAmountDiv {
     text-align: center;
     font-size: 1.5em;
     color: #000;
@@ -234,50 +249,52 @@ input[type="submit"]:hover{
     transform: translate(-50%, -50%);
 }
 
-.levelAndRatio .ratio{
+.levelAndRatio .ratio {
     background: #13062f;
     width: 45%;
     position: relative;
     border-radius: 20px;
     position: relative;
 }
-.levelAndRatio .ratio .ratioContent{
+
+.levelAndRatio .ratio .ratioContent {
     text-align: center;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
 /* End Level and Ratio */
 
 /* Start display projects */
-.projects{
-    margin-left: 20px;
-    margin-right: 20px;
+.projects {
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 20px;
     background: #13062f;
     border-radius: 20px;
+    max-width: 80%;
+
     /* height: 300px;
     overflow: auto; */
 
 }
+
 /* End display projects */
 
 /* Start Section Best Skills */
-.best-skills{
-    margin-left: 20px;
-    margin-right: 20px;
+.best-skills {
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 20px;
     background: #13062f;
     border-radius: 20px;
+    max-width: 80%;
 }
+
 /* End Section Best Skills */
-
-
-
-
-
