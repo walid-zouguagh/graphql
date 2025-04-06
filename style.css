@@ -18,7 +18,7 @@
 } */
 
 body {
-    background-image: url(./images/bg-login.jpg);
+    background-image: url(./bg-login.jpg);
     background-size: cover;
     min-height: 100vh;
     font-family: "Roboto", serif;
