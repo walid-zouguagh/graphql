@@ -469,6 +469,8 @@ function generateSkillChart(skills) {
     skillData.forEach((skill, index) => {
         let skillName = skill[0];
         let skillValue = skill[1];
+        console.log("skillValue", skill);
+        
 
         let barHeight = (skillValue / maxValue) * maxBarHeight;
         let x = index * (barWidth + barSpacing);
@@ -514,7 +516,7 @@ function aggregateSkills(skills) {
             if (!skillMap[skillName]) {
                 skillMap[skillName] = 0;
             }
-            skillMap[skillName] += tx.amount;
+            skillMap[skillName] = tx.amount;
         });
     });
 
