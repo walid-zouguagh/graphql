@@ -52,11 +52,11 @@ function Login() {
     // setupFormSubmission() {
     // Get the form element
     const form = document.getElementById('loginForm')
-    form?.addEventListener('submit', (e) => {
+    form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         usernameValue = document.getElementById('username').value;
         passwordValue = document.getElementById("password").value;
-        handleSubmit(usernameValue, passwordValue);
+        await handleSubmit(usernameValue, passwordValue);
     });
 
     // }
@@ -75,33 +75,58 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
 
-function handleSubmit(username, password) {
+async function handleSubmit(username, password) {
 
     // const username = document.getElementById('username');
     // const password = document.getElementById('password');
     // const credentials = btoa(`${username.value}:${password.value}`);
 
     const credentials = btoa(`${username}:${password}`);
-
-    fetch(`https://learn.zone01oujda.ma/api/auth/signin`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Basic ${credentials}`
-        },
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                const err = document.getElementById('err');
-                err.textContent = data.error;
-                err.style.display = "block";
-            } else {
-                //Store JWT token
-                localStorage.setItem("jwt", data)
-                home()
-            }
+    console.log("credentials", credentials);
+    try{
+        const res = await fetch(`https://learn.zone01oujda.ma/api/auth/signin`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Basic ${credentials}`
+            },
         })
+        const data = await res.json()
+        if (data.error) {
+            const err = document.getElementById('err');
+            err.textContent = data.error;
+            err.style.display = "block";
+        } else {
+            //Store JWT token
+            localStorage.setItem("jwt", data)
+            home()
+        }
+    }catch (err){
+        console.log(err)
+    }
+
+    // fetch(`https://learn.zone01oujda.ma/api/auth/signin`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         "Authorization": `Basic ${credentials}`
+    //     },
+    // })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log(data);
+            
+    //         if (data.error) {
+    //             const err = document.getElementById('err');
+    //             err.textContent = data.error;
+    //             err.style.display = "block";
+    //         } else {
+    //             //Store JWT token
+    //             localStorage.setItem("jwt", data)
+    //             home()
+    //         }
+    //     }).catch((reg) => console.log(reg));
+
 
 }
 
